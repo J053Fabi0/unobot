@@ -32,10 +32,12 @@ from internationalization import _, user_locale
 def show_settings(update: Update, context: CallbackContext):
     chat = update.message.chat
 
-    if update.message.chat.type != 'private':
-        send_async(context.bot, chat.id,
-                   text=_("Please edit your settings in a private chat with "
-                          "the bot."))
+    if update.message.chat.type != "private":
+        send_async(
+            context.bot,
+            chat.id,
+            text=_("Please edit your settings in a private chat with " "the bot."),
+        )
         return
 
     us = UserSetting.get(id=update.message.from_user.id)
@@ -44,14 +46,17 @@ def show_settings(update: Update, context: CallbackContext):
         us = UserSetting(id=update.message.from_user.id)
 
     if not us.stats:
-        stats = '📊' + ' ' + _("Enable statistics")
+        stats = "📊" + " " + _("Enable statistics")
     else:
-        stats = '❌' + ' ' + _("Delete all statistics")
+        stats = "❌" + " " + _("Delete all statistics")
 
-    kb = [[stats], ['🌍' + ' ' + _("Language")]]
-    send_async(context.bot, chat.id, text='🔧' + ' ' + _("Settings"),
-               reply_markup=ReplyKeyboardMarkup(keyboard=kb,
-                                                one_time_keyboard=True))
+    kb = [[stats], ["🌍" + " " + _("Language")]]
+    send_async(
+        context.bot,
+        chat.id,
+        text="🔧" + " " + _("Settings"),
+        reply_markup=ReplyKeyboardMarkup(keyboard=kb, one_time_keyboard=True),
+    )
 
 
 @user_locale
@@ -60,20 +65,24 @@ def kb_select(update: Update, context: CallbackContext):
     user = update.message.from_user
     option = context.match[1]
 
-    if option == '📊':
+    if option == "📊":
         us = UserSetting.get(id=user.id)
         us.stats = True
         send_async(context.bot, chat.id, text=_("Enabled statistics!"))
 
-    elif option == '🌍':
-        kb = [[locale + ' - ' + descr]
-              for locale, descr
-              in sorted(available_locales.items())]
-        send_async(context.bot, chat.id, text=_("Select locale"),
-                   reply_markup=ReplyKeyboardMarkup(keyboard=kb,
-                                                    one_time_keyboard=True))
+    elif option == "🌍":
+        kb = [
+            [locale + " - " + descr]
+            for locale, descr in sorted(available_locales.items())
+        ]
+        send_async(
+            context.bot,
+            chat.id,
+            text=_("Select locale"),
+            reply_markup=ReplyKeyboardMarkup(keyboard=kb, one_time_keyboard=True),
+        )
 
-    elif option == '❌':
+    elif option == "❌":
         us = UserSetting.get(id=user.id)
         us.stats = False
         us.first_places = 0
@@ -92,14 +101,15 @@ def locale_select(update: Update, context: CallbackContext):
         us = UserSetting.get(id=user.id)
         us.lang = option
         _.push(option)
-        send_async(context.bot, chat.id, text=_("Set locale!"))
+        send_async(context.bot, chat.id, text=_("Locale set!"))
         _.pop()
 
+
 def register():
-    dispatcher.add_handler(CommandHandler('settings', show_settings))
-    dispatcher.add_handler(MessageHandler(Filters.regex('^([' + '📊' +
-                                                        '🌍' +
-                                                        '❌' + ']) .+$'),
-                                        kb_select))
-    dispatcher.add_handler(MessageHandler(Filters.regex(r'^(\w\w_\w\w) - .*'),
-                                        locale_select))
+    dispatcher.add_handler(CommandHandler("settings", show_settings))
+    dispatcher.add_handler(
+        MessageHandler(Filters.regex("^([" + "📊" + "🌍" + "❌" + "]) .+$"), kb_select)
+    )
+    dispatcher.add_handler(
+        MessageHandler(Filters.regex(r"^(\w\w_\w\w) - .*"), locale_select)
+    )
