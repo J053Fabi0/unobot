@@ -8,7 +8,7 @@ then
 		msgfmt unobot.po -o unobot.mo
 		cd ../../
 	};
-else 
+else
 	echo 'Only execute this in the "locales" directory'
 	exit 1;
 fi
@@ -39,3 +39,7 @@ compile ca_CA
 compile ml_IN
 # Việt Nam
 compile vi_VN
+# Hindi
+compile hn_IN
+# Uzbek
+compile uz_UZ
